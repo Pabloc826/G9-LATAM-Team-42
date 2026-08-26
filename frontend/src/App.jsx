@@ -93,20 +93,16 @@ export default function App() {
 
   // Si no hay usuario autenticado, mostrar Login/Register
   if (!user) {
-    return (
-      <div className="auth-wrapper" data-theme={theme}>
-        {authView === "login" ? (
-          <LoginView
-            onLogin={handleLogin}
-            onSwitchToRegister={() => setAuthView("register")}
-          />
-        ) : (
-          <RegisterView
-            onRegister={handleLogin}
-            onSwitchToLogin={() => setAuthView("login")}
-          />
-        )}
-      </div>
+    return authView === "login" ? (
+      <LoginView
+        onLogin={handleLogin}
+        onSwitchToRegister={() => setAuthView("register")}
+      />
+    ) : (
+      <RegisterView
+        onRegister={handleLogin}
+        onSwitchToLogin={() => setAuthView("login")}
+      />
     );
   }
 

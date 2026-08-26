@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AuthLayout from "./AuthLayout";
 
 export default function LoginView({ onLogin, onSwitchToRegister }) {
   const [email, setEmail] = useState("");
@@ -44,60 +45,60 @@ export default function LoginView({ onLogin, onSwitchToRegister }) {
   }
 
   return (
-    <div className="auth-view">
-      <div className="auth-card">
-        <div className="auth-header">
-          <span className="brand-mark" aria-hidden="true">⚡</span>
-          <span className="brand-name">JouleAI</span>
-          <h1>Iniciar sesión</h1>
-          <p className="text-muted">Accede a tu cuenta de JouleAI</p>
+    <AuthLayout>
+      <div className="auth-header">
+        <h1>Iniciar sesión</h1>
+        <p className="auth-subtitle">Accede a tu cuenta de JouleAI</p>
+      </div>
+
+      <form className="auth-form" onSubmit={handleSubmit} noValidate>
+        <div className="form-field">
+          <label htmlFor="login-email">Email</label>
+          <input
+            id="login-email"
+            type="email"
+            placeholder="tu@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
 
-        <form className="auth-form" onSubmit={handleSubmit} noValidate>
-          <div className="form-field">
-            <label htmlFor="login-email">Email</label>
-            <input
-              id="login-email"
-              type="email"
-              placeholder="tu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+        <div className="form-field">
+          <label htmlFor="login-password">Contraseña</label>
+          <input
+            id="login-password"
+            type="password"
+            placeholder="••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
 
-          <div className="form-field">
-            <label htmlFor="login-password">Contraseña</label>
-            <input
-              id="login-password"
-              type="password"
-              placeholder="••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+        {error && <p className="field-error">{error}</p>}
 
-          {error && <p className="field-error">{error}</p>}
+        <button type="submit" className="auth-submit-btn" disabled={loading}>
+          {loading ? "Ingresando…" : "Ingresar"}
+        </button>
+      </form>
 
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? "Ingresando…" : "Ingresar"}
-          </button>
-        </form>
-
-        <p className="auth-switch">
-          <button type="button" className="link-btn" onClick={() => alert("Esta función estará disponible en producción.")}>
-            ¿Olvidaste tu contraseña?
-          </button>
-        </p>
-
-        <p className="auth-switch">
-          ¿No tienes cuenta?{" "}
-          <button type="button" className="link-btn" onClick={onSwitchToRegister}>
-            Crear cuenta
-          </button>
-        </p>
+      <div className="auth-switch">
+        <button
+          type="button"
+          className="link-btn"
+          onClick={() => alert("Esta función estará disponible en producción.")}
+        >
+          ¿Olvidaste tu contraseña?
+        </button>
       </div>
-    </div>
+
+      <p className="auth-switch">
+        ¿No tienes cuenta?{" "}
+        <button type="button" className="link-btn" onClick={onSwitchToRegister}>
+          Crear cuenta
+        </button>
+      </p>
+    </AuthLayout>
   );
 }
