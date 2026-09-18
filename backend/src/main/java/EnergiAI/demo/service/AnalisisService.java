@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AnalisisService {
@@ -19,13 +20,16 @@ public class AnalisisService {
     private final AnalisisEnergeticoRepository repository;
     private final DataScienceClient dataScienceClient;
     private final GeminiClient geminiClient;
+    private final TipoDeCambioService tipoDeCambioService;
 
     public AnalisisService(AnalisisEnergeticoRepository repository,
                            DataScienceClient dataScienceClient,
-                           GeminiClient geminiClient) {
+                           GeminiClient geminiClient,
+                           TipoDeCambioService tipoDeCambioService) {
         this.repository = repository;
         this.dataScienceClient = dataScienceClient;
         this.geminiClient = geminiClient;
+        this.tipoDeCambioService = tipoDeCambioService;
     }
 
     public AnalisisResponse procesarAnalisisEnergetico(AnalisisRequest request, Long usuarioId) {
@@ -65,8 +69,7 @@ public class AnalisisService {
                     prediccion.getCategoria(),
                     request.getConsumo_kwh(),
                     request.getCantidad_equipos(),
-                    costo_estimado
-            );
+                    costo_estimado);
             recomendacionesFinales.add(consejoIA);
         } catch (Exception e) {
             // Fallback según categoría
@@ -79,7 +82,22 @@ public class AnalisisService {
             }
         }
 
-        // 5. Guardar en base de datos (incluye todos los nuevos campos)
+        //5. Agregar conversiones reales usando la API
+        try {
+            Map<String, Double> tasas = tipoDeCambioService.obtenerTasasLatam("USD");
+            StringBuilder conversiones = new StringBuilder("CONVERSIÓN ESTIMADA:\n");
+
+            tasas.forEach((moneda, tasa) -> {
+                Double costoLocal = costo_estimado * tasa;
+                conversiones.append(String.format("• %s: %.2f\n", moneda, costoLocal));
+            });
+
+            recomendacionesFinales.add(conversiones.toString());
+        }catch (Exception e){
+            System.out.println("No se pudieron obtener las tasas de cambio: " + e.getMessage());
+        }
+
+        // 6. Guardar en base de datos (incluye todos los nuevos campos)
         AnalisisEnergetico analisis = AnalisisEnergetico.builder()
                 .consumoKwh(request.getConsumo_kwh())
                 .usoHorarioPico(request.getUso_horario_pico())
@@ -100,7 +118,7 @@ public class AnalisisService {
                 .build();
         repository.save(analisis);
 
-        // 6. Ensamblar la respuesta final
+        // 7. Ensamblar la respuesta final
         return new AnalisisResponse(
                 prediccion.getCategoria(),
                 prediccion.getProbabilidad(),

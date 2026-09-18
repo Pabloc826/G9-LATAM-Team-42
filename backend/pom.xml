@@ -62,6 +62,11 @@
             <version>1.9.2</version>
             <scope>test</scope>
         </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 <!--        DESARROLLO-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -130,6 +135,11 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-oracle</artifactId>
         </dependency>
+<!--        Conversor-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
